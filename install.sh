@@ -36,4 +36,4 @@ source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
 make -f Makefile clean
 make -f Makefile release$1 -j16
 make -f Makefile pkg-win$1
-cp installers/win32/OoliteInstall* ../installer/
+cp installers/win32/OoliteInstall-* ../installer/
