@@ -1,0 +1,31 @@
+name: Test build Oolite
+
+on:
+  workflow_dispatch: # add run button in github
+jobs:
+  run:
+    runs-on: windows-2025
+
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up MSYS2 (MinGW)
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+    - name: Download latest release assets
+      uses: robinraju/release-downloader@v1
+      with:
+        repository: mcarans/oolite_mingw64_environment
+        latest: true
+        fileName: "*"
+        out-file-path: ./packages
+
+    - name: Install
+      shell: msys2 {0}
+      run: |
+        ./install.sh
+    - name: Upload folder contents as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: dist/**
