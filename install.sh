@@ -21,8 +21,8 @@ pacboy -S libvorbis --noconfirm
 pacman -S make --noconfirm
 pacboy -S nsis --noconfirm
 
-mkdir dist
-pacman -Q > dist/installed-packages.txt
+mkdir installer
+pacman -Q > installer/installed-packages.txt
 
 rm -rf oolite
 git clone -b modern_build https://github.com/mcarans/oolite.git
@@ -36,4 +36,4 @@ source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
 make -f Makefile clean
 make -f Makefile release$1 -j16
 make -f Makefile pkg-win$1
-cp installers/win32/OoliteInstall* dist
+cp installers/win32/OoliteInstall* installer/
