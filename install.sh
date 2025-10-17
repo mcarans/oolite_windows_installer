@@ -18,7 +18,7 @@ pacman -S git --noconfirm
 pacboy -S libpng --noconfirm
 pacboy -S openal --noconfirm
 pacboy -S libvorbis --noconfirm
-pacboy -S make --noconfirm
+pacman -S make --noconfirm
 pacboy -S nsis --noconfirm
 
 mkdir dist
