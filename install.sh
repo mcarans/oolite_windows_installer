@@ -14,7 +14,6 @@ done
 cd ..
 
 pacman -S git --noconfirm
-
 pacboy -S libpng --noconfirm
 pacboy -S openal --noconfirm
 pacboy -S libvorbis --noconfirm
@@ -37,3 +36,18 @@ make -f Makefile clean
 make -f Makefile release$1 -j16
 make -f Makefile pkg-win$1
 cp installers/win32/OoliteInstall-* ../installer/
+
+cp /mingw64/share/GNUstep/Makefiles/GNUstep.sh /etc/profile.d/
+
+if ! grep -q "# Custom history settings" ~/.bashrc; then
+  cat >> ~/.bashrc <<'EOF'
+
+# Custom history settings
+WIN_HOME=$(cygpath "$USERPROFILE")
+export HISTFILE=$WIN_HOME/.bash_history
+export HISTSIZE=5000
+export HISTFILESIZE=10000
+shopt -s histappend
+PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
+EOF
+fi
