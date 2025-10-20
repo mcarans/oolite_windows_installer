@@ -8,7 +8,10 @@ package_names=(pcaudiolib espeak-ng nspr spidermonkey gnustep-make gnustep-base 
 
 for packagename in "${package_names[@]}"; do
     echo "Installing $packagename package"
-	pacman -U *$packagename*any.pkg.tar.zst --noconfirm
+	if ! pacman -U *$packagename*any.pkg.tar.zst --noconfirm ; then
+	    echo "❌ $packagename install failed!"
+	    exit 1
+	fi
 done
 
 cd ..
