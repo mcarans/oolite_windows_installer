@@ -4,7 +4,7 @@ pacboy -S binutils --noconfirm
 
 cd packages
 
-package_names=(gnustep-make gnustep-base nspr spidermonkey pcaudiolib espeak-ng SDL)
+package_names=(gnustep-make gnustep-base spidermonkey pcaudiolib espeak-ng SDL)
 
 for packagename in "${package_names[@]}"; do
     echo "Installing $packagename package"
