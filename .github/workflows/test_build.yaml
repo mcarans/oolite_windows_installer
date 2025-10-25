@@ -1,4 +1,4 @@
-name: Test build Oolite
+name: Build Oolite pre-release deps
 
 on:
   workflow_dispatch: # add run button in github
@@ -17,6 +17,7 @@ jobs:
       with:
         repository: mcarans/oolite_mingw64_environment
         latest: true
+        preRelease: true
         fileName: "*"
         out-file-path: ./packages
 
