@@ -35,9 +35,15 @@ git submodule update --init
 git checkout -- .gitmodules
 
 source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
+
 make -f Makefile clean
-make -f Makefile release$1 -j16
-make -f Makefile pkg-win$1
+make -f Makefile release -j16
+make -f Makefile pkg-win
+cp installers/win32/OoliteInstall-* ../installer/
+
+make -f Makefile clean
+make -f Makefile release-deployment -j16
+make -f Makefile pkg-win-deployment
 cp installers/win32/OoliteInstall-* ../installer/
 
 cp /mingw64/share/GNUstep/Makefiles/GNUstep.sh /etc/profile.d/
