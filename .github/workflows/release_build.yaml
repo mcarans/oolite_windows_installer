@@ -25,7 +25,7 @@ jobs:
     - name: Install
       shell: msys2 {0}
       run: |
-        ./install.sh -deployment
+        ./install.sh
 
     # Upload artifacts to the release
     - name: Upload to GitHub Release
