@@ -1,9 +1,6 @@
-pacman -S dos2unix --noconfirm
-pacman -S pactoys --noconfirm
-pacboy -S binutils --noconfirm
-
-cd packages
-
+# No parameters: build both clang and gcc in that order (end setup will be for gcc)
+# One parameter gcc = build gcc only (end setup will be for gcc)
+# One parameter clang = build clang only (end setup will be for clang)
 
 rename() {
 	# First parameter is package name
@@ -51,6 +48,11 @@ move_installer() {
 	cd ../..
 }
 
+pacman -S dos2unix --noconfirm
+pacman -S pactoys --noconfirm
+pacboy -S binutils --noconfirm
+
+cd packages
 echo "Installing common libraries"
 package_names=(spidermonkey pcaudiolib espeak-ng SDL)
 for packagename in "${package_names[@]}"; do
@@ -76,6 +78,7 @@ cd ..
 mkdir installer
 
 if [[ -z "$1" || "$1" == "clang" ]]; then
+	cd packages
 	echo "Installing GNUStep libraries with clang"
 	export cc=/mingw64/bin/clang
 	export cpp=/mingw64/bin/clang++
@@ -83,6 +86,7 @@ if [[ -z "$1" || "$1" == "clang" ]]; then
 	for packagename in "${clang_package_names[@]}"; do
 		install $packagename clang
 	done
+	cd ..
 	pacman -Q > installer/installed-packages-clang.txt
 	source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
 
@@ -103,6 +107,7 @@ if [[ -z "$1" ]]; then
 fi
 
 if [[ -z "$1" || "$1" == "gcc" ]]; then
+	cd packages
 	echo "Installing GNUStep libraries with gcc"
 	export cc=/mingw64/bin/gcc
 	export cpp=/mingw64/bin/g++
@@ -110,6 +115,7 @@ if [[ -z "$1" || "$1" == "gcc" ]]; then
 	for packagename in "${gcc_package_names[@]}"; do
 		install $packagename gcc
 	done
+	cd ..
 	pacman -Q > installer/installed-packages-gcc.txt
 	source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
 
