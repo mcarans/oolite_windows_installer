@@ -4,16 +4,58 @@ pacboy -S binutils --noconfirm
 
 cd packages
 
-package_names=(gnustep-make gnustep-base spidermonkey pcaudiolib espeak-ng SDL)
 
-for packagename in "${package_names[@]}"; do
-    echo "Installing $packagename package"
-	if ! pacman -U *$packagename*any.pkg.tar.zst --noconfirm ; then
-	    echo "❌ $packagename install failed!"
+rename() {
+	# First parameter is package name
+	# Second parameter is file pattern
+	# Third optional parameter is gcc or clang
+    if [ -z "$3" ]; then
+		fullname=$1
+    else
+		fullname="${1}_${3}"
+    fi
+    filename=$(ls $2 2>/dev/null)
+    if [ -z "$filename" ]; then
+        echo "❌ No file matching $3 found."
+        exit 1
+    fi
+    if [ "$3" ]; then
+		# add gcc or clang to filename
+        newname="${filename/$1/$fullname}"
+        mv $filename $newname
+        filename=$newname
+	fi
+
+	echo "${filename}" "${fullname}"
+}
+
+install() {
+	# First parameter is package name
+	# Second optional parameter is gcc or clang
+    echo "Installing $1 package"
+
+	# package file eg. mingw-w64-x86_64-libobjc2-2.3-3-any.pkg.tar.zst
+	read filename fullname <<< "$(rename $1 "*$1*any.pkg.tar.zst" $2)"
+    if ! pacman -U $filename --noconfirm ; then
+	    echo "❌ $filename install failed!"
 	    exit 1
 	fi
-done
+}
 
+move_installer() {
+	# First parameter is gcc or clang
+	
+	cd installers/win32
+	read filename fullname <<< "$(rename "OoliteInstall" "OoliteInstall-*" $1)"
+	mv $filename ../../../installer/
+	cd ../..
+}
+
+echo "Installing common libraries"
+package_names=(spidermonkey pcaudiolib espeak-ng SDL)
+for packagename in "${package_names[@]}"; do
+	install $packagename
+done
 cd ..
 
 pacman -S git --noconfirm
@@ -23,28 +65,62 @@ pacboy -S libvorbis --noconfirm
 pacman -S make --noconfirm
 pacboy -S nsis --noconfirm
 
-mkdir installer
-pacman -Q > installer/installed-packages.txt
-
 rm -rf oolite
 git clone -b modern_build https://github.com/mcarans/oolite.git
 cd oolite
-
 cp .absolute_gitmodules .gitmodules
 git submodule update --init
 git checkout -- .gitmodules
+cd ..
 
-source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
+mkdir installer
 
-make -f Makefile clean
-make -f Makefile release -j16
-make -f Makefile pkg-win
-cp installers/win32/OoliteInstall-* ../installer/
+if [[ -z "$1" || "$1" == "clang" ]]; then
+	echo "Installing GNUStep libraries with clang"
+	export cc=/mingw64/bin/clang
+	export cpp=/mingw64/bin/clang++
+	clang_package_names=(libobjc2 gnustep-make gnustep-base)
+	for packagename in "${clang_package_names[@]}"; do
+		install $packagename clang
+	done
+	pacman -Q > installer/installed-packages-clang.txt
+	source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
 
-make -f Makefile clean
-make -f Makefile release-deployment -j16
-make -f Makefile pkg-win-deployment
-cp installers/win32/OoliteInstall-* ../installer/
+	cd oolite
+	make -f Makefile clean
+	make -f Makefile release$1 -j16
+	move_installer clang
+	make -f Makefile pkg-win$1
+	move_installer clang
+	cd ..
+fi
+
+if [[ -z "$1" ]]; then
+	echo "Uninstalling clang GNUStep libraries"
+	pacboy -R gnustep-base
+	pacboy -R gnustep-make
+	pacboy -R libobjc2
+fi
+
+if [[ -z "$1" || "$1" == "gcc" ]]; then
+	echo "Installing GNUStep libraries with gcc"
+	export cc=/mingw64/bin/gcc
+	export cpp=/mingw64/bin/g++
+	gcc_package_names=(gnustep-make gnustep-base)
+	for packagename in "${gcc_package_names[@]}"; do
+		install $packagename gcc
+	done
+	pacman -Q > installer/installed-packages-gcc.txt
+	source /mingw64/share/GNUstep/Makefiles/GNUstep.sh
+
+	cd oolite
+	make -f Makefile clean
+	make -f Makefile release$1 -j16
+	move_installer gcc
+	make -f Makefile pkg-win$1
+	move_installer gcc
+	cd ..
+fi
 
 cp /mingw64/share/GNUstep/Makefiles/GNUstep.sh /etc/profile.d/
 
