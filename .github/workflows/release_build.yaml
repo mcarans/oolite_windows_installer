@@ -36,11 +36,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Delete release and tag on failure
+    - name: Install gh on failure
       if: failure()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_REF_NAME: ${{ github.event.release.tag_name }}
       run: |
         # Install GitHub CLI
         choco install gh -y
@@ -48,5 +47,10 @@ jobs:
         # Authenticate GitHub CLI
         echo "${GITHUB_TOKEN}" | gh auth login --with-token
 
+    - name: Delete release and tag on failure
+      if: failure()
+      env:
+        GITHUB_REF_NAME: ${{ github.event.release.tag_name }}
+      run: |
         # Delete the release and tag
         gh release delete "$GITHUB_REF_NAME" --cleanup-tag --yes
