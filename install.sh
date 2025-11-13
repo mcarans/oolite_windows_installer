@@ -2,26 +2,23 @@
 # One parameter gcc = build gcc only (end setup will be for gcc)
 # One parameter clang = build clang only (end setup will be for clang)
 
-getname_or_rename() {
+rename() {
 	# First parameter is package name
 	# Second parameter is file pattern
-	# Third parameter is whether to rename
-	# Fourth optional parameter is gcc or clang
-    if [ -z "$4" ]; then
+	# Third optional parameter is gcc or clang
+    if [ -z "$3" ]; then
 		fullname=$1
     else
-		fullname="${1}_${4}"
+		fullname="${1}_${3}"
     fi
     filename=$(ls $2 2>/dev/null)
     if [ -z "$filename" ]; then
         echo "❌ No file matching $2 found."
         exit 1
     fi
-    if [ "$4" ]; then
+    if [ "$3" ]; then
         newname="${filename/$1/$fullname}"
-        if [[ "$3" == "rename" ]]; then
-			mv $filename $newname
-		fi
+        mv $filename $newname
         filename=$newname
 	fi
 
@@ -33,8 +30,21 @@ install() {
 	# Second optional parameter is gcc or clang
     echo "Installing $1 package"
 
+    if [ -z "$2" ]; then
+		fullname=$1
+    else
+		fullname="${1}_${2}"
+    fi
+
+    packagename="*$fullname*any.pkg.tar.zst"
+	filename=$(ls $packagename 2>/dev/null)
+
 	# package file eg. mingw-w64-x86_64-libobjc2-2.3-3-any.pkg.tar.zst
-	read filename fullname <<< "$(getname_or_rename $1 "*$1*any.pkg.tar.zst" "get" $2)"
+    if [ -z "$filename" ]; then
+        echo "❌ No file matching $packagename found."
+        exit 1
+    fi
+
     if ! pacman -U $filename --noconfirm ; then
 	    echo "❌ $filename install failed!"
 	    exit 1
@@ -45,7 +55,7 @@ move_installer() {
 	# First parameter is gcc or clang
 	
 	cd installers/win32
-	read filename fullname <<< "$(getname_or_rename "OoliteInstall" "OoliteInstall-*" "rename" $1)"
+	read filename fullname <<< "$(rename "OoliteInstall" "OoliteInstall-*" $1)"
 	mv $filename ../../../installer/
 	cd ../..
 }
