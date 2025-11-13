@@ -34,7 +34,7 @@ install() {
     echo "Installing $1 package"
 
 	# package file eg. mingw-w64-x86_64-libobjc2-2.3-3-any.pkg.tar.zst
-	read filename fullname <<< "$(getname_or_rename $1 "*$1*any.pkg.tar.zst" "get" "$2)"
+	read filename fullname <<< "$(getname_or_rename $1 "*$1*any.pkg.tar.zst" "get" $2)"
     if ! pacman -U $filename --noconfirm ; then
 	    echo "❌ $filename install failed!"
 	    exit 1
