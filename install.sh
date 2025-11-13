@@ -90,7 +90,7 @@ cd ..
 mkdir installer
 
 if [[ -z "$1" || "$1" == "clang" ]]; then
-	pacman -S clang --noconfirm
+	pacboy -S clang --noconfirm
 
 	cd packages
 	echo "Installing GNUStep libraries with clang"
