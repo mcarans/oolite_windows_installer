@@ -90,6 +90,8 @@ cd ..
 mkdir installer
 
 if [[ -z "$1" || "$1" == "clang" ]]; then
+	pacman -S clang --noconfirm
+
 	cd packages
 	echo "Installing GNUStep libraries with clang"
 	export cc=/mingw64/bin/clang
@@ -104,9 +106,13 @@ if [[ -z "$1" || "$1" == "clang" ]]; then
 
 	cd oolite
 	make -f Makefile clean
-	make -f Makefile release$1 -j16
+	make -f Makefile release -j16
+	make -f Makefile pkg-win
 	move_installer clang
-	make -f Makefile pkg-win$1
+
+	make -f Makefile clean
+	make -f Makefile release-deployment -j16
+	make -f Makefile pkg-win-deployment
 	move_installer clang
 	cd ..
 fi
@@ -133,9 +139,13 @@ if [[ -z "$1" || "$1" == "gcc" ]]; then
 
 	cd oolite
 	make -f Makefile clean
-	make -f Makefile release$1 -j16
+	make -f Makefile release -j16
+	make -f Makefile pkg-win
 	move_installer gcc
-	make -f Makefile pkg-win$1
+
+	make -f Makefile clean
+	make -f Makefile release-deployment -j16
+	make -f Makefile pkg-win-deployment
 	move_installer gcc
 	cd ..
 fi
