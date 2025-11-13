@@ -91,6 +91,7 @@ mkdir installer
 
 if [[ -z "$1" || "$1" == "clang" ]]; then
 	pacboy -S clang --noconfirm
+	pacboy -S lld --noconfirm
 
 	cd packages
 	echo "Installing GNUStep libraries with clang"
@@ -106,12 +107,22 @@ if [[ -z "$1" || "$1" == "clang" ]]; then
 
 	cd oolite
 	make -f Makefile clean
-	make -f Makefile release -j16
+	if make -f Makefile release -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
 	make -f Makefile pkg-win
 	move_installer clang
 
 	make -f Makefile clean
-	make -f Makefile release-deployment -j16
+	if make -f Makefile release-deployment -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
 	make -f Makefile pkg-win-deployment
 	move_installer clang
 	cd ..
@@ -139,12 +150,22 @@ if [[ -z "$1" || "$1" == "gcc" ]]; then
 
 	cd oolite
 	make -f Makefile clean
-	make -f Makefile release -j16
+	if make -f Makefile release -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
 	make -f Makefile pkg-win
 	move_installer gcc
 
 	make -f Makefile clean
-	make -f Makefile release-deployment -j16
+	if make -f Makefile release-deployment -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
 	make -f Makefile pkg-win-deployment
 	move_installer gcc
 	cd ..
