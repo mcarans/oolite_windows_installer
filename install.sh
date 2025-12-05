@@ -63,10 +63,12 @@ move_installer() {
 pacman -S dos2unix --noconfirm
 pacman -S pactoys --noconfirm
 pacboy -S binutils --noconfirm
+pacboy -S pcaudiolib --noconfirm 
+pacboy -S espeak-ng --noconfirm
 
 cd packages
 echo "Installing common libraries"
-package_names=(spidermonkey pcaudiolib espeak-ng SDL)
+package_names=(spidermonkey SDL)
 for packagename in "${package_names[@]}"; do
 	install $packagename
 done
