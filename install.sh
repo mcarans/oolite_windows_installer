@@ -63,8 +63,6 @@ move_installer() {
 pacman -S dos2unix --noconfirm
 pacman -S pactoys --noconfirm
 pacboy -S binutils --noconfirm
-pacboy -S pcaudiolib --noconfirm 
-pacboy -S espeak-ng --noconfirm
 
 cd packages
 echo "Installing common libraries"
@@ -78,6 +76,8 @@ pacman -S git --noconfirm
 pacboy -S libpng --noconfirm
 pacboy -S openal --noconfirm
 pacboy -S libvorbis --noconfirm
+pacboy -S pcaudiolib --noconfirm 
+pacboy -S espeak-ng --noconfirm
 pacman -S make --noconfirm
 pacboy -S nsis --noconfirm
 
