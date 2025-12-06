@@ -36,7 +36,7 @@ install() {
 		fullname="${1}_${2}"
     fi
 
-    packagename="*$fullname*any.pkg.tar.zst"
+    packagename="$MINGW_PACKAGE_PREFIX-$fullname*any.pkg.tar.zst"
 	filename=$(ls $packagename 2>/dev/null)
 
 	# package file eg. mingw-w64-x86_64-libobjc2-2.3-3-any.pkg.tar.zst
