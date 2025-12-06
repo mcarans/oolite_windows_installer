@@ -1,4 +1,4 @@
-# Oolite MSYS2 Windows Installer Maker and Quick Local Setup
+# Oolite MSYS2 Windows Installer Builder and Quick Local Setup
 
 Creates release of Windows Oolite NSIS packages using versioned MSYS2 UCRT64 Clang or MinGW64 GCC dependencies. The GitHub Action creates a UCRT64 Clang build followed by a MinGW64 GCC build of release and release-deployment installers. The installers are then put into the release on GitHub.
 
