@@ -118,7 +118,7 @@ git submodule update --init
 git checkout -- .gitmodules
 cd ..
 
-mkdir installer
+mkdir -p installer
 
 if [[ -z "$1" || "$1" == "clang" ]]; then
 	pacboy -S clang --noconfirm
