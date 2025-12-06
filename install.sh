@@ -60,6 +60,35 @@ move_installer() {
 	cd ../..
 }
 
+build_oolite() {
+	# First parameter is gcc or clang
+
+	pacman -Q > installer/installed-packages-$1.txt
+	source $MINGW_PREFIX/share/GNUstep/Makefiles/GNUstep.sh
+
+	cd oolite
+	make -f Makefile clean
+	if make -f Makefile release -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
+	make -f Makefile pkg-win
+	move_installer $1
+
+	make -f Makefile clean
+	if make -f Makefile release-deployment -j16; then
+		echo "✅ Oolite build completed successfully"
+	else
+		echo "❌ Oolite build failed" >&2
+		exit 1
+	fi
+	make -f Makefile pkg-win-deployment
+	move_installer $1
+	cd ..
+}
+
 pacman -S dos2unix --noconfirm
 pacman -S pactoys --noconfirm
 pacboy -S binutils --noconfirm
@@ -97,83 +126,28 @@ if [[ -z "$1" || "$1" == "clang" ]]; then
 
 	cd packages
 	echo "Installing GNUStep libraries with clang"
-	export cc=/$MINGW_PREFIX/bin/clang
-	export cxx=/$MINGW_PREFIX/bin/clang++
+	export cc=$MINGW_PREFIX/bin/clang
+	export cxx=$MINGW_PREFIX/bin/clang++
 	clang_package_names=(libobjc2 gnustep-make gnustep-base)
 	for packagename in "${clang_package_names[@]}"; do
 		install $packagename clang
 	done
 	cd ..
-	pacman -Q > installer/installed-packages-clang.txt
-	source /$MINGW_PREFIX/share/GNUstep/Makefiles/GNUstep.sh
-
-	cd oolite
-	make -f Makefile clean
-	if make -f Makefile release -j16; then
-		echo "✅ Oolite build completed successfully"
-	else
-		echo "❌ Oolite build failed" >&2
-		exit 1
-	fi
-	make -f Makefile pkg-win
-	move_installer clang
-
-	make -f Makefile clean
-	if make -f Makefile release-deployment -j16; then
-		echo "✅ Oolite build completed successfully"
-	else
-		echo "❌ Oolite build failed" >&2
-		exit 1
-	fi
-	make -f Makefile pkg-win-deployment
-	move_installer clang
-	cd ..
-fi
-
-if [[ -z "$1" ]]; then
-	echo "Uninstalling clang GNUStep libraries"
-	pacboy -R gnustep-base
-	pacboy -R gnustep-make
-	pacboy -R libobjc2
-fi
-
-if [[ -z "$1" || "$1" == "gcc" ]]; then
+	build_oolite clang
+else
 	cd packages
 	echo "Installing GNUStep libraries with gcc"
-	export cc=/$MINGW_PREFIX/bin/gcc
-	export cxx=/$MINGW_PREFIX/bin/g++
+	export cc=$MINGW_PREFIX/bin/gcc
+	export cxx=$MINGW_PREFIX/bin/g++
 	gcc_package_names=(gnustep-make gnustep-base)
 	for packagename in "${gcc_package_names[@]}"; do
 		install $packagename gcc
 	done
 	cd ..
-	pacman -Q > installer/installed-packages-gcc.txt
-	source /$MINGW_PREFIX/share/GNUstep/Makefiles/GNUstep.sh
-
-	cd oolite
-	make -f Makefile clean
-	if make -f Makefile release -j16; then
-		echo "✅ Oolite build completed successfully"
-	else
-		echo "❌ Oolite build failed" >&2
-		exit 1
-	fi
-	make -f Makefile pkg-win
-	move_installer gcc
-
-	make -f Makefile clean
-	if make -f Makefile release-deployment -j16; then
-		echo "✅ Oolite build completed successfully"
-	else
-		echo "❌ Oolite build failed" >&2
-		exit 1
-	fi
-	make -f Makefile pkg-win-deployment
-	move_installer gcc
-	cd ..
+	build_oolite gcc
 fi
 
-cp /$MINGW_PREFIX/share/GNUstep/Makefiles/GNUstep.sh /etc/profile.d/
+echo 'source $MINGW_PREFIX/share/GNUstep/Makefiles/GNUstep.sh' > /etc/profile.d/GNUstep.sh
 
 if ! grep -q "# Custom history settings" ~/.bashrc; then
   cat >> ~/.bashrc <<'EOF'

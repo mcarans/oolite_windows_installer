@@ -7,12 +7,7 @@ jobs:
     runs-on: windows-2025
 
     steps:
-    - uses: actions/checkout@v5
-    - name: Set up MSYS2 (MinGW)
-      uses: msys2/setup-msys2@v2
-      with:
-        msystem: MINGW64
-        update: true
+    - uses: actions/checkout@v6
     - name: Download latest release assets
       uses: robinraju/release-downloader@v1
       with:
@@ -22,10 +17,23 @@ jobs:
         fileName: "*"
         out-file-path: ./packages
 
-    - name: Install
+    - name: Set up MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+    - name: Install gcc
       shell: msys2 {0}
+      env:
+        msystem: MINGW64
       run: |
-        ./install.sh
+        ./install.sh gcc
+    - name: Install clang
+      shell: msys2 {0}
+      env:
+        msystem: UCRT64
+      run: |
+        ./install.sh clang
+
     - name: Upload folder contents as artifact
       uses: actions/upload-artifact@v4
       with:
