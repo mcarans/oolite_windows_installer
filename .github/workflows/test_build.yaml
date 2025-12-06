@@ -16,24 +16,29 @@ jobs:
         preRelease: true
         fileName: "*"
         out-file-path: ./packages
-
     - name: Set up MSYS2
       uses: msys2/setup-msys2@v2
       with:
         update: true
+
     - name: Install gcc
       shell: msys2 {0}
       env:
         msystem: MINGW64
       run: |
         ./install.sh gcc
+    - name: Upload folder contents as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: installer/**
+
     - name: Install clang
       shell: msys2 {0}
       env:
         msystem: UCRT64
       run: |
         ./install.sh clang
-
     - name: Upload folder contents as artifact
       uses: actions/upload-artifact@v4
       with:

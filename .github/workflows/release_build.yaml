@@ -18,24 +18,17 @@ jobs:
         latest: true
         fileName: "*"
         out-file-path: ./packages
-
     - name: Set up MSYS2
       uses: msys2/setup-msys2@v2
       with:
         update: true
+
     - name: Install gcc
       shell: msys2 {0}
       env:
         msystem: MINGW64
       run: |
         ./install.sh gcc
-    - name: Install clang
-      shell: msys2 {0}
-      env:
-        msystem: UCRT64
-      run: |
-        ./install.sh clang
-
     # Upload artifacts to the release
     - name: Upload to GitHub Release
       if: success()
@@ -44,6 +37,22 @@ jobs:
         files: installer/*
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Install clang
+      shell: msys2 {0}
+      env:
+        msystem: UCRT64
+      run: |
+        ./install.sh clang
+    # Upload artifacts to the release
+    - name: Upload to GitHub Release
+      if: success()
+      uses: softprops/action-gh-release@v2
+      with:
+        files: installer/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
     - name: Install gh on failure
       if: failure()
