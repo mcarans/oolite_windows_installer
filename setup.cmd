@@ -12,7 +12,7 @@ set /p INSTALL_PATH=Enter the installation path:
 set /p UCRT_CLANG_OR_MINGW_GCC=Enter 1 for UCRT64 Clang or 2 for MinGW64 GCC: 
 
 :: Where to download Oolite dependencies
-set OOLITE_DEPS_URL=https://api.github.com/repos/mcarans/oolite_windeps_build/releases/latest
+set OOLITE_DEPS_URL=https://api.github.com/repos/OoliteProject/oolite_windeps_build/releases/latest
 mkdir packages
 
 echo === Download Oolite dependencies ===
